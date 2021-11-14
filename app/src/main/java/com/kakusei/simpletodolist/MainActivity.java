@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent detial = new Intent(MainActivity.this, DetialActivity.class);
                 activityResultLauncher.launch(detial);
+                System.out.println("TEST");
             }
         });
     }
