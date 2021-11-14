@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="40dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:id="@+id/main_event_ListLayout"
+    >
     <ImageView
         android:id="@+id/event_item_image"
         android:layout_width="10dp"

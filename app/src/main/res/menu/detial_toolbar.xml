@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/toolbar_deadLine"
+        android:icon="@drawable/ic_toolbar_deadline"
+        android:title="Alert"
+        app:showAsAction="always"
+        app:tint="?attr/colorOnSecondary"
+        />
+    <item
+        android:id="@+id/toolbar_alter"
+        android:icon="@drawable/ic_toolbar_notification"
+        android:title="Alert"
+        app:showAsAction="always"
+        app:tint="?attr/colorOnSecondary"
+        />
+</menu>

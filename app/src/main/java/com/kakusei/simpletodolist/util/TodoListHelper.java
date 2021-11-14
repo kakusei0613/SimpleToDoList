@@ -12,6 +12,7 @@ public class TodoListHelper extends SQLiteOpenHelper {
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "title VARCHAR(255) NOT NULL," +
                     "body TEXT," +
+                    "creationTime TEXT NOT NULL," +
                     "deadLine TEXT," +
                     "time TEXT," +
                     "status BOOLEAN NOT NULL)";

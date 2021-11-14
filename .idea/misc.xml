@@ -3,9 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/kakusei/AndroidStudioProjects/SimpleToDoList/app/src/main/res/layout/activity_detial.xml" value="0.33" />
+        <entry key="..\:/Users/kakusei/AndroidStudioProjects/SimpleToDoList/app/src/main/res/layout/activity_detial.xml" value="0.22" />
         <entry key="..\:/Users/kakusei/AndroidStudioProjects/SimpleToDoList/app/src/main/res/layout/activity_event_item.xml" value="0.25" />
         <entry key="..\:/Users/kakusei/AndroidStudioProjects/SimpleToDoList/app/src/main/res/layout/activity_main.xml" value="0.18" />
+        <entry key="..\:/Users/kakusei/AndroidStudioProjects/SimpleToDoList/app/src/main/res/layout/toolbar.xml" value="0.20208333333333334" />
+        <entry key="..\:/Users/kakusei/AndroidStudioProjects/SimpleToDoList/app/src/main/res/menu/detial_toolbar.xml" value="0.9" />
+        <entry key="..\:/Users/kakusei/AndroidStudioProjects/SimpleToDoList/app/src/main/res/menu/toolbar.xml" value="0.19791666666666666" />
       </map>
     </option>
   </component>

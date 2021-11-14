@@ -1,122 +1,169 @@
 package com.kakusei.simpletodolist;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.os.Build;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Switch;
-import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kakusei.simpletodolist.entity.Event;
+import com.kakusei.simpletodolist.repository.IEventRepository;
+import com.kakusei.simpletodolist.repository.impl.EventRepositoryImpl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DetialActivity extends AppCompatActivity {
-    private Switch dateSwitch;
-    private Switch timeSwitch;
-    private TextView date;
-    private TextView time;
+    private EditText title;
+    private EditText body;
+    private DatePickerDialog deadLineDatePickerDialog;
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;
+    private FloatingActionButton addFloatingActionButton;
+    private Event event;
+    private SimpleDateFormat dateAndTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private IEventRepository eventRepository = new EventRepositoryImpl(this);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detial_toolbar,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.toolbar_alter: {
+                Calendar calendar;
+                if (event.getTime() == null) {
+                    calendar = Calendar.getInstance();
+                } else {
+                    calendar = Calendar.getInstance();
+                    try {
+                        calendar.setTime(dateAndTimeFormat.parse(event.getTime()));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (datePickerDialog == null) {
+                    datePickerDialog = new DatePickerDialog(DetialActivity.this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                            timePickerDialog = new TimePickerDialog(DetialActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                                @Override
+                                public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+//                                    Log.d("kakusei", "onTimeSet:"+ year + "-" + month + "-" + day + " " + hour + ":" + minute);
+                                    event.setTime(year + "-" + (month + 1) + "-" + day + " " + hour + ":" + minute);
+                                }
+                            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+                            timePickerDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialogInterface) {
+                                    Toast.makeText(DetialActivity.this,"You cancel setting time.",Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            timePickerDialog.show();
+                        }
+                    },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DATE));
+                    datePickerDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            Toast.makeText(DetialActivity.this,"You cancel setting dead line.",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                datePickerDialog.show();
+                break;
+            }
+            case android.R.id.home: {
+                finish();
+                break;
+            }
+            case R.id.toolbar_deadLine: {
+                Calendar calendar;
+                try {
+                    if (event.getDeadLine() == null)
+                        calendar = Calendar.getInstance();
+                    else {
+                        calendar = Calendar.getInstance();
+                        calendar.setTime(dateFormat.parse(event.getDeadLine()));
+                    }
+                    if (deadLineDatePickerDialog == null) {
+                        deadLineDatePickerDialog = new DatePickerDialog(DetialActivity.this, new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                                event.setDeadLine(i + "-" + (i1 + 1) + "-" + i2);
+//                                Log.d("kakusei","DeadLinePickerDialog: DealLine = " + i + "-" + i1 + "-" + i2);
+//                                Log.d("kakusei", "event.getDeadLine: " + event.getDeadLine());
+                            }
+                        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                deadLineDatePickerDialog.show();
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detial);
-        dateSwitch = findViewById(R.id.detial_deadLine_switch);
-        timeSwitch = findViewById(R.id.detial_time_switch);
-        date = findViewById(R.id.detial_deadLine_showDate_textView);
-        time = findViewById(R.id.detial_time_showTime_textView);
-
-        RelativeLayout relativeLayout = findViewById(R.id.detial_deadLine_relativeLayout);
-        relativeLayout.setOnClickListener(new View.OnClickListener() {
+//        setActionBar((Toolbar) findViewById(R.id.detial_toolBar));
+        setSupportActionBar(findViewById(R.id.detial_toolBar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        title = findViewById(R.id.detial_title_editText);
+        body = findViewById(R.id.detial_body_editText);
+        event = (Event) this.getIntent().getParcelableExtra("event");
+        if (event == null) {
+            event = new Event();
+            event.setCreationTime(dateAndTimeFormat.format(new Date(System.currentTimeMillis())));
+        }
+        findViewById(R.id.detial_done_floatActionButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(dateSwitch.isChecked()) {
-                    datePickerDialog.show();
+                event.setBody(body.getText().toString());
+                event.setStatus(0);
+                event.setTitle(title.getText().toString());
+                if (event.getId() == null) {
+                    eventRepository.insert(event);
                 } else {
-                    dateSwitch.setChecked(true);
+                    eventRepository.update(event);
                 }
+                setResult(Activity.RESULT_OK);
+                finish();
             }
         });
-        dateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        title.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (datePickerDialog == null) {
-                    datePickerDialog = new DatePickerDialog(compoundButton.getContext());
-                    datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                            date.setText(i + "-" + i1 + "-" + i2);
-//                            Toast.makeText(datePicker.getContext(),i + " " + i1 + " " + i2, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-                if (b) {
-                    datePickerDialog.show();
-                } else {
-                    date.setText("");
+            public void onFocusChange(View view, boolean b) {
+                if (b == false) {
+                    if (title.getText().toString().length() == 0) {
+                        Toast.makeText(DetialActivity.this,"Title can not be empty!", Toast.LENGTH_SHORT).show();
+                    }
+                    event.setTitle(title.getText().toString());
                 }
             }
         });
-        relativeLayout = findViewById(R.id.detial_time_relativeLayout);
-        relativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (timeSwitch.isChecked()) {
-                    timePickerDialog.show();
-                } else {
-                    timeSwitch.setChecked(true);
-                }
-            }
-        });
-        timeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (timePickerDialog == null) {
-                    timePickerDialog = new TimePickerDialog(compoundButton.getContext(), new TimePickerDialog.OnTimeSetListener() {
-                        @Override
-                        public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                            time.setText(i + ":" + i1);
-                            Toast.makeText(timePickerDialog.getContext(),i + ":" + i1, Toast.LENGTH_SHORT).show();
-                        }
-                    }, 8, 30, true);
-                }
-                if (b) {
-                    timePickerDialog.show();
-                } else {
-                    time.setText("");
-                }
-            }
-        });
-//        TextView init
-        date.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (dateSwitch.isChecked()) {
-                    datePickerDialog.show();
-                } else {
-                    return;
-                }
-            }
-        });
-        time.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (timeSwitch.isChecked()) {
-                    timePickerDialog.show();
-                } else {
-                    return;
-                }
-            }
-        });
+        title.setText(event.getTitle());
+        body.setText(event.getBody());
+        event.setStatus(0);
     }
 }

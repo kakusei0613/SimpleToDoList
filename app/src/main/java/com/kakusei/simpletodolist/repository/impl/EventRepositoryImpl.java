@@ -18,6 +18,7 @@ import java.util.List;
 public class EventRepositoryImpl implements IEventRepository {
     private TodoListHelper todoListHelper;
     private SQLiteDatabase sqLiteDatabase;
+    private Cursor cursor;
 
     public EventRepositoryImpl(Context context) {
         this.todoListHelper = new TodoListHelper(context,"event.db",null,1);
@@ -64,6 +65,8 @@ public class EventRepositoryImpl implements IEventRepository {
         StringBuilder methodName;
         for (int i = 0; i < fields.length; i++) {
             Field f = fields[i];
+            if (f.getName().equals("CREATOR"))
+                continue;
 //            In order to get the getter methods.
             methodName = new StringBuilder();
             methodName.append("get");
@@ -95,10 +98,6 @@ public class EventRepositoryImpl implements IEventRepository {
                         }
                     }
                 }
-                if(i == fields.length - 1) {
-                    fieldList.append(") ");
-                    valueList.append(") ");
-                }
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
@@ -113,6 +112,8 @@ public class EventRepositoryImpl implements IEventRepository {
         }
 //        If the entity field was all not null.
 //        The sql statement is : INSERT INTO event(id, title, body, deadline, time, status) VALUES(?,?,?,?,?,?)
+        fieldList.append(") ");
+        valueList.append(") ");
         insertStatement.append(fieldList.toString());
         insertStatement.append(valueList.toString());
 //        System.out.println(insertStatement);
@@ -136,8 +137,8 @@ public class EventRepositoryImpl implements IEventRepository {
     public List<Event> queryForList(String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
         sqLiteDatabase = todoListHelper.getReadableDatabase();
         Field[] fields = Event.class.getDeclaredFields();
-//        Execute the query sql statement.
-        Cursor cursor = sqLiteDatabase.query("event", columns, selection, selectionArgs, groupBy, having, orderBy, limit);
+        cursor = sqLiteDatabase.query("event", columns, selection, selectionArgs, groupBy, having, orderBy, limit);
+//        Execute the query sql statement.cursor = sqLiteDatabase.query("event", columns, selection, selectionArgs, groupBy, having, orderBy, limit);
         List<Event> result = new ArrayList<Event>();
         StringBuilder methodName;
         Method method;
@@ -145,6 +146,8 @@ public class EventRepositoryImpl implements IEventRepository {
         while (cursor.moveToNext()) {
             Event event = new Event();
             for (Field f : fields) {
+                if (f.getName().equals("CREATOR"))
+                    continue;
 //                Get setter methods.
                 methodName = new StringBuilder();
                 methodName.append("set");
@@ -152,8 +155,10 @@ public class EventRepositoryImpl implements IEventRepository {
                 methodName.append(f.getName().substring(1));
                 try {
                     method = Event.class.getMethod(methodName.toString(),new Class[] {f.getType()});
-                    cursorMethod = f.getType().getSimpleName().equals("Integer") ? Cursor.class.getMethod("get" + f.getType().getSimpleName().substring(0,3), int.class) :
+                    cursorMethod = f.getType().getSimpleName().equals("Integer") ?
+                            Cursor.class.getMethod("get" + f.getType().getSimpleName().substring(0,3), int.class) :
                             Cursor.class.getMethod("get" + f.getType().getSimpleName(), int.class);
+//                    System.out.println("cursor:" + cursor + " cursorMethod:" + cursorMethod.getName() + " result:" + cursorMethod.invoke(cursor, cursor.getColumnIndex(f.getName())));
                     method.invoke(event,new Object[] {cursorMethod.invoke(cursor, cursor.getColumnIndex(f.getName()))});
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
@@ -187,6 +192,9 @@ public class EventRepositoryImpl implements IEventRepository {
         Field[] fields = event.getClass().getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getName().equals("id")) {
+                continue;
+            }
+            if (fields[i].getName().equals("CREATOR")) {
                 continue;
             }
             getterMethodName = new StringBuilder("get");
