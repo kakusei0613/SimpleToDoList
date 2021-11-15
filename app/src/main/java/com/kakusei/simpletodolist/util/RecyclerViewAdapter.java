@@ -24,11 +24,17 @@ import com.kakusei.simpletodolist.MainActivity;
 import com.kakusei.simpletodolist.R;
 import com.kakusei.simpletodolist.entity.Event;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private List<Event> data;
     private ActivityResultLauncher<Intent> activityResultLauncher;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private Date today;
 
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -36,6 +42,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView creationTime;
         ImageView imageView;
         LinearLayout item;
+        Integer colorOnErr;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -43,12 +50,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             creationTime = (TextView) itemView.findViewById(R.id.event_item_creationTime);
             item = (LinearLayout) itemView.findViewById(R.id.main_event_ListLayout);
             imageView = (ImageView) itemView.findViewById(R.id.event_item_image);
+            colorOnErr = itemView.getResources().getColor(R.color.red);
+        }
+
+        public Integer getColorOnErr() {
+            return colorOnErr;
         }
     }
 
     public RecyclerViewAdapter(List<Event> data, ActivityResultLauncher<Intent> activityResultLauncher) {
         this.data = data;
         this.activityResultLauncher = activityResultLauncher;
+        this.today = new Date(System.currentTimeMillis());
     }
 
     public void setData(List<Event> data) {
@@ -88,11 +101,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     holder.title.setTextColor(Color.GRAY);
                     holder.imageView.setColorFilter(Color.GRAY);
                 } else {
-                    int color = view.getResources().getColor(R.color.design_default_color_on_secondary);
-                    holder.imageView.setImageResource(R.drawable.ic_item_unselected);
-                    holder.title.setTextColor(color);
-                    holder.imageView.setColorFilter(color);
-                    data.get(position).setStatus(0);
+                    int color;
+                    try {
+                        if (data.get(position).getDeadLine() != null && today.before(simpleDateFormat.parse(data.get(position).getDeadLine()))) {
+                            color = view.getResources().getColor(R.color.red);
+                        } else {
+                            color = view.getResources().getColor(R.color.design_default_color_on_secondary);
+                        }
+                        holder.imageView.setImageResource(R.drawable.ic_item_unselected);
+                        holder.title.setTextColor(color);
+                        holder.imageView.setColorFilter(color);
+                        data.get(position).setStatus(0);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -104,6 +126,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Event event = data.get(position);
         holder.title.setText(event.getTitle());
         holder.creationTime.setText(event.getCreationTime());
+        try {
+            if (event.getDeadLine() != null && today.after(simpleDateFormat.parse(event.getDeadLine()))) {
+                holder.imageView.setColorFilter(holder.getColorOnErr());
+                holder.title.setTextColor(holder.getColorOnErr());
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

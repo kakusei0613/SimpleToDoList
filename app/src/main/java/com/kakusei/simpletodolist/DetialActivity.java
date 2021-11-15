@@ -148,6 +148,10 @@ public class DetialActivity extends AppCompatActivity {
         addFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (event.getTitle() == null) {
+                    Toast.makeText(DetialActivity.this,"Title can not be empty!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 event.setBody(body.getText().toString());
                 event.setStatus(0);
                 event.setTitle(title.getText().toString());
