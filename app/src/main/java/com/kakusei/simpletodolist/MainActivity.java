@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onActivityResult(ActivityResult result) {
             if (result.getResultCode() == Activity.RESULT_OK) {
-                Log.d("kakusei","Return OK.");
+                recreate();
             }
         }
     });
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.main_recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerViewAdapter = new RecyclerViewAdapter(eventRepository.queryForList(null,null,null,null,null,null,null));
+        recyclerViewAdapter = new RecyclerViewAdapter(eventRepository.queryForList(null,null,null,null,null,null,null),activityResultLauncher);
 //        recyclerViewAdapter.setData(eventRepository.queryForList(null,null,null,null,null,null,null));
         recyclerView.setAdapter(recyclerViewAdapter);
 
@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent detial = new Intent(MainActivity.this, DetialActivity.class);
                 activityResultLauncher.launch(detial);
-                System.out.println("TEST");
             }
         });
     }

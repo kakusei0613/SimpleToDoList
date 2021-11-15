@@ -16,6 +16,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kakusei.simpletodolist.entity.Event;
@@ -34,6 +35,7 @@ public class DetialActivity extends AppCompatActivity {
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;
     private FloatingActionButton addFloatingActionButton;
+    private MenuItem alter;
     private Event event;
     private SimpleDateFormat dateAndTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -41,6 +43,12 @@ public class DetialActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detial_toolbar,menu);
+        alter = menu.findItem(R.id.toolbar_alter);
+        if (event.getTime() == null) {
+            alter.setIcon(R.drawable.ic_toolbar_notification);
+        } else {
+            alter.setIcon(R.drawable.ic_toolbar_notification_fill);
+        }
         return true;
     }
 
@@ -131,12 +139,13 @@ public class DetialActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         title = findViewById(R.id.detial_title_editText);
         body = findViewById(R.id.detial_body_editText);
+        addFloatingActionButton = findViewById(R.id.detial_done_floatActionButton);
         event = (Event) this.getIntent().getParcelableExtra("event");
         if (event == null) {
             event = new Event();
             event.setCreationTime(dateAndTimeFormat.format(new Date(System.currentTimeMillis())));
         }
-        findViewById(R.id.detial_done_floatActionButton).setOnClickListener(new View.OnClickListener() {
+        addFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 event.setBody(body.getText().toString());

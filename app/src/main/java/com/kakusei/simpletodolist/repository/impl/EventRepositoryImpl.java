@@ -235,8 +235,9 @@ public class EventRepositoryImpl implements IEventRepository {
         }
         updateStatement.append(updateColumnAndValue.toString());
         updateStatement.append(whereArgs.toString());
-        System.out.println("Update Statement:" + updateStatement.toString());
+//        System.out.println("Update Statement:" + updateStatement.toString());
         sqLiteDatabase.execSQL(updateStatement.toString());
         sqLiteDatabase.close();
     }
+
 }

@@ -6,13 +6,13 @@
         android:icon="@drawable/ic_toolbar_deadline"
         android:title="Alert"
         app:showAsAction="always"
-        app:tint="?attr/colorOnSecondary"
+        app:tint="?attr/colorOnPrimary"
         />
     <item
         android:id="@+id/toolbar_alter"
         android:icon="@drawable/ic_toolbar_notification"
         android:title="Alert"
         app:showAsAction="always"
-        app:tint="?attr/colorOnSecondary"
+        app:tint="?attr/colorOnPrimary"
         />
 </menu>
