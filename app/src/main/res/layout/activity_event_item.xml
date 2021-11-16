@@ -4,12 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="55dp"
     android:orientation="vertical"
+    android:id="@+id/main_event_ListLayout"
     >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:orientation="horizontal"
-        android:id="@+id/main_event_ListLayout"
         >
         <ImageView
             android:id="@+id/event_item_image"

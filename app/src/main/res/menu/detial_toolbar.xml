@@ -2,16 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/toolbar_delete"
+        android:title="Delete"
+        android:icon="@drawable/ic_toolbar_delete"
+        app:showAsAction="never"
+        />
+    <item
         android:id="@+id/toolbar_deadLine"
         android:icon="@drawable/ic_toolbar_deadline"
-        android:title="Alert"
+        android:title="Setting DeadLine"
         app:showAsAction="always"
         app:tint="?attr/colorOnPrimary"
         />
     <item
         android:id="@+id/toolbar_alter"
         android:icon="@drawable/ic_toolbar_notification"
-        android:title="Alert"
+        android:title="Setting alert"
         app:showAsAction="always"
         app:tint="?attr/colorOnPrimary"
         />

@@ -1,6 +1,7 @@
 package com.kakusei.simpletodolist.util;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -23,6 +24,8 @@ import com.kakusei.simpletodolist.DetialActivity;
 import com.kakusei.simpletodolist.MainActivity;
 import com.kakusei.simpletodolist.R;
 import com.kakusei.simpletodolist.entity.Event;
+import com.kakusei.simpletodolist.repository.IEventRepository;
+import com.kakusei.simpletodolist.repository.impl.EventRepositoryImpl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,6 +36,8 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private List<Event> data;
     private ActivityResultLauncher<Intent> activityResultLauncher;
+    private IEventRepository eventRepository;
+    private Context context;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private Date today;
 
@@ -58,10 +63,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    public RecyclerViewAdapter(List<Event> data, ActivityResultLauncher<Intent> activityResultLauncher) {
+    public RecyclerViewAdapter(Context context, List<Event> data, ActivityResultLauncher<Intent> activityResultLauncher) {
         this.data = data;
         this.activityResultLauncher = activityResultLauncher;
         this.today = new Date(System.currentTimeMillis());
+        this.context = context;
+        this.eventRepository = new EventRepositoryImpl(context);
     }
 
     public void setData(List<Event> data) {
@@ -103,10 +110,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 } else {
                     int color;
                     try {
-                        if (data.get(position).getDeadLine() != null && today.before(simpleDateFormat.parse(data.get(position).getDeadLine()))) {
-                            color = view.getResources().getColor(R.color.red);
+                        if (data.get(position).getDeadLine() != null && today.after(simpleDateFormat.parse(data.get(position).getDeadLine()))) {
+                            color = view.getResources().getColor(R.color.red,theme);
                         } else {
-                            color = view.getResources().getColor(R.color.design_default_color_on_secondary);
+                            color = view.getResources().getColor(R.color.design_default_color_on_secondary,theme);
                         }
                         holder.imageView.setImageResource(R.drawable.ic_item_unselected);
                         holder.title.setTextColor(color);
@@ -116,6 +123,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         e.printStackTrace();
                     }
                 }
+//                eventRepository.update(data.get(position));
+//                notifyItemChanged(position);
             }
         });
         return holder;
@@ -133,6 +142,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
         } catch (ParseException e) {
             e.printStackTrace();
+        }
+        if (event.getStatus() == 1) {
+            holder.imageView.setImageResource(R.drawable.ic_item_selected);
+            holder.imageView.setColorFilter(Color.GRAY);
+            holder.title.setTextColor(Color.GRAY);
         }
     }
 

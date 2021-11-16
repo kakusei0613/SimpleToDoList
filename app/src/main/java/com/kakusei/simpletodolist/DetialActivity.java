@@ -1,6 +1,7 @@
 package com.kakusei.simpletodolist;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -34,8 +35,10 @@ public class DetialActivity extends AppCompatActivity {
     private DatePickerDialog deadLineDatePickerDialog;
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;
-    private FloatingActionButton addFloatingActionButton;
+    private FloatingActionButton doneFloatingActionButton;
     private MenuItem alter;
+    private MenuItem deadLine;
+    private MenuItem delete;
     private Event event;
     private SimpleDateFormat dateAndTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -44,10 +47,22 @@ public class DetialActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detial_toolbar,menu);
         alter = menu.findItem(R.id.toolbar_alter);
+        deadLine = menu.findItem(R.id.toolbar_deadLine);
+        delete = menu.findItem(R.id.toolbar_delete);
+        if (event.getId() == null) {
+            delete.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        } else {
+            delete.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        }
         if (event.getTime() == null) {
             alter.setIcon(R.drawable.ic_toolbar_notification);
         } else {
             alter.setIcon(R.drawable.ic_toolbar_notification_fill);
+        }
+        if (event.getDeadLine() == null) {
+            deadLine.setIcon(R.drawable.ic_toolbar_deadline);
+        } else {
+            deadLine.setIcon(R.drawable.ic_toolbar_deadline_fill);
         }
         return true;
     }
@@ -124,6 +139,32 @@ public class DetialActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 deadLineDatePickerDialog.show();
+                break;
+            }
+            case R.id.toolbar_delete: {
+                if (event == null || event.getId() == null) {
+                    return false;
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(DetialActivity.this);
+                builder.setTitle("Warning!");
+                builder.setMessage("Do you want to delete this event?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        eventRepository.deleteById(event.getId());
+                        setResult(Activity.RESULT_OK);
+                        finish();
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        setResult(Activity.RESULT_CANCELED);
+//                        finish();
+                        return;
+                    }
+                });
+                builder.show();
             }
         }
         return super.onOptionsItemSelected(item);
@@ -139,13 +180,13 @@ public class DetialActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         title = findViewById(R.id.detial_title_editText);
         body = findViewById(R.id.detial_body_editText);
-        addFloatingActionButton = findViewById(R.id.detial_done_floatActionButton);
+        doneFloatingActionButton = findViewById(R.id.detial_done_floatActionButton);
         event = (Event) this.getIntent().getParcelableExtra("event");
         if (event == null) {
             event = new Event();
             event.setCreationTime(dateAndTimeFormat.format(new Date(System.currentTimeMillis())));
         }
-        addFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+        doneFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (event.getTitle() == null) {
@@ -161,6 +202,7 @@ public class DetialActivity extends AppCompatActivity {
                     eventRepository.update(event);
                 }
                 setResult(Activity.RESULT_OK);
+//                setResult();
                 finish();
             }
         });
