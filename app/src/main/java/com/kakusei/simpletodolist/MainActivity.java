@@ -69,8 +69,9 @@ public class MainActivity extends AppCompatActivity {
                     show = false;
                     showAndHide.setIcon(R.drawable.ic_toolbar_show);
                 }
-                recyclerViewAdapter.setData(eventRepository.queryForList(null,"status = ?", new String[] {show ? "1" : "0"},null,null,"creationTime DESC",null));
-                recyclerViewAdapter.notifyDataSetChanged();
+//                recyclerViewAdapter.setData(eventRepository.queryForList(null,"status = ?", new String[] {show ? "1" : "0"},null,null,"creationTime "+ (sort ? "ASC" : "DESC"),null));
+                recyclerViewAdapter = null;
+                recyclerViewAdapter = new RecyclerViewAdapter(this, eventRepository.queryForList(null,"status = ?", new String[] {show ? "1" : "0"},null,null,"creationTime "+ (sort ? "ASC" : "DESC"),null),activityResultLauncher);
                 break;
             }
             case R.id.toolbar_sort: {
@@ -80,11 +81,15 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     sort = true;
                 }
-                recyclerViewAdapter.setData(eventRepository.queryForList(null,"status = ?", new String[] {status},null,null,"creationTime " + (sort ? "ASC" : "DESC"),null));
-                recyclerViewAdapter.notifyDataSetChanged();
+//                recyclerViewAdapter.setData(eventRepository.queryForList(null,"status = ?", new String[] {status},null,null,"creationTime " + (sort ? "ASC" : "DESC"),null));
+                recyclerViewAdapter = null;
+                recyclerViewAdapter = new RecyclerViewAdapter(this, eventRepository.queryForList(null,"status = ?", new String[] {status},null,null,"creationTime " + (sort ? "ASC" : "DESC"),null),activityResultLauncher);
                 break;
             }
         }
+//        recyclerViewAdapter = new RecyclerViewAdapter(this, eventRepository.queryForList(null,"status = ?", new String[] {show ? "1" : "0"},null,null,"creationTime "+ (sort ? "ASC" : "DESC"),null),activityResultLauncher);
+//        recyclerViewAdapter.notifyDataSetChanged();
+        recyclerView.setAdapter(recyclerViewAdapter);
         return super.onOptionsItemSelected(item);
     }
 
@@ -105,8 +110,11 @@ public class MainActivity extends AppCompatActivity {
         addFloatingActionButton = findViewById(R.id.main_add_floatActionButton);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+//        recyclerViewAdapter = new RecyclerViewAdapter(this, eventRepository.queryForList(null,"status = ?",new String[]{"0"},null,null,"creationTime DESC",null),activityResultLauncher);
         recyclerViewAdapter = new RecyclerViewAdapter(this, eventRepository.queryForList(null,"status = ?",new String[]{"0"},null,null,"creationTime DESC",null),activityResultLauncher);
+
         recyclerView.setAdapter(recyclerViewAdapter);
+//        分隔线
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         findViewById(R.id.main_add_floatActionButton).setOnClickListener(new View.OnClickListener() {
             @Override

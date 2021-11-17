@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.kakusei.simpletodolist.DetialActivity;
 import com.kakusei.simpletodolist.MainActivity;
 import com.kakusei.simpletodolist.R;
@@ -92,7 +93,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 Intent event = new Intent(view.getContext(), DetialActivity.class);
                 event.putExtra("event",data.get(position));
                 activityResultLauncher.launch(event);
-                return false;
+                return true;
             }
         });
         holder.item.setOnClickListener(new View.OnClickListener() {
@@ -101,9 +102,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 int position = holder.getLayoutPosition();
                 Resources.Theme theme = view.getContext().getTheme();
                 if (data.get(position).getStatus() == 0) {
-                    data.get(position).setStatus(1);
-//                    Log.d("kakusei","" + holder.title.getCurrentTextColor());
-//                    holder.imageView.setImageResource(R.);
                     holder.imageView.setImageResource(R.drawable.ic_item_selected);
                     holder.title.setTextColor(Color.GRAY);
                     holder.imageView.setColorFilter(Color.GRAY);
@@ -118,13 +116,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         holder.imageView.setImageResource(R.drawable.ic_item_unselected);
                         holder.title.setTextColor(color);
                         holder.imageView.setColorFilter(color);
-                        data.get(position).setStatus(0);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
                 }
-//                eventRepository.update(data.get(position));
-//                notifyItemChanged(position);
+                if (data.get(position).getStatus() == 1) {
+                    data.get(position).setStatus(0);
+                } else {
+                    data.get(position).setStatus(1);
+                }
+                eventRepository.update(data.get(position));
+                data.remove(position);
+                notifyItemRemoved(position);
+                Snackbar.make(view,"Succeeded!",Snackbar.LENGTH_SHORT).show();
+
             }
         });
         return holder;

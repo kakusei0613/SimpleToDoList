@@ -51,6 +51,7 @@ public class DetialActivity extends AppCompatActivity {
         delete = menu.findItem(R.id.toolbar_delete);
         if (event.getId() == null) {
             delete.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            menu.removeItem(R.id.toolbar_delete);
         } else {
             delete.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
@@ -174,7 +175,6 @@ public class DetialActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detial);
-//        setActionBar((Toolbar) findViewById(R.id.detial_toolBar));
         setSupportActionBar(findViewById(R.id.detial_toolBar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
