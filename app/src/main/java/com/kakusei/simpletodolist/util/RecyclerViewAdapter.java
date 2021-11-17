@@ -1,6 +1,11 @@
 package com.kakusei.simpletodolist.util;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -27,6 +32,8 @@ import com.kakusei.simpletodolist.R;
 import com.kakusei.simpletodolist.entity.Event;
 import com.kakusei.simpletodolist.repository.IEventRepository;
 import com.kakusei.simpletodolist.repository.impl.EventRepositoryImpl;
+import com.kakusei.simpletodolist.sevice.AlarmReceiver;
+import com.kakusei.simpletodolist.sevice.AlarmTimer;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -92,6 +99,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 int position = holder.getLayoutPosition();
                 Intent event = new Intent(view.getContext(), DetialActivity.class);
                 event.putExtra("event",data.get(position));
+//                AlarmTimer.setAlarmTimer(context,data.get(position), AlarmManager.RTC_WAKEUP);
                 activityResultLauncher.launch(event);
                 return true;
             }
@@ -100,6 +108,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View view) {
                 int position = holder.getLayoutPosition();
+                Event temp = data.get(position);
                 Resources.Theme theme = view.getContext().getTheme();
                 if (data.get(position).getStatus() == 0) {
                     holder.imageView.setImageResource(R.drawable.ic_item_selected);
@@ -129,7 +138,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 data.remove(position);
                 notifyItemRemoved(position);
                 Snackbar.make(view,"Succeeded!",Snackbar.LENGTH_SHORT).show();
-
             }
         });
         return holder;

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
@@ -23,6 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kakusei.simpletodolist.entity.Event;
 import com.kakusei.simpletodolist.repository.IEventRepository;
 import com.kakusei.simpletodolist.repository.impl.EventRepositoryImpl;
+import com.kakusei.simpletodolist.sevice.AlarmTimer;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -92,6 +94,7 @@ public class DetialActivity extends AppCompatActivity {
                                 public void onTimeSet(TimePicker timePicker, int hour, int minute) {
 //                                    Log.d("kakusei", "onTimeSet:"+ year + "-" + month + "-" + day + " " + hour + ":" + minute);
                                     event.setTime(year + "-" + (month + 1) + "-" + day + " " + hour + ":" + minute);
+                                    AlarmTimer.setAlarmTimer(DetialActivity.this, event, AlarmManager.RTC_WAKEUP);
                                 }
                             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
                             timePickerDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
