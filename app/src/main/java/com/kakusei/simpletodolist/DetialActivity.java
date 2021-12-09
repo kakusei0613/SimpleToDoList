@@ -192,7 +192,7 @@ public class DetialActivity extends AppCompatActivity {
         doneFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (event.getTitle() == null) {
+                if (event.getTitle() == null || event.getTitle().length() == 0) {
                     Toast.makeText(DetialActivity.this,"Title can not be empty!", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -205,7 +205,6 @@ public class DetialActivity extends AppCompatActivity {
                     eventRepository.update(event);
                 }
                 setResult(Activity.RESULT_OK);
-//                setResult();
                 finish();
             }
         });
@@ -215,8 +214,9 @@ public class DetialActivity extends AppCompatActivity {
                 if (b == false) {
                     if (title.getText().toString().length() == 0) {
                         Toast.makeText(DetialActivity.this,"Title can not be empty!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        event.setTitle(title.getText().toString());
                     }
-                    event.setTitle(title.getText().toString());
                 }
             }
         });
